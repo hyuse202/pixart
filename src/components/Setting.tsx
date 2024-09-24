@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 // import { Canvas, Object } from "fabric";
 const Setting = ({ canvas }: any) => {
-  const [selectObject, setSelectObject] = useState<any> (null);
+  const [selectObject, setSelectObject] = useState<any>(null);
   const [width, setWidth] = useState<number | any>(null);
   const [height, setHeight] = useState<number | any>(null);
   const [color, setColor] = useState<any>(null);
@@ -14,10 +14,10 @@ const Setting = ({ canvas }: any) => {
       canvas.on("selection:create", (event: any) => {
         handleObjectSelection(event.selected[0]);
       });
-      canvas.on("selection:clear", (event:any) => {
-        setSelectObject(null)
-        handleClearSetting()
-      })
+      canvas.on("selection:clear", (event: any) => {
+        setSelectObject(null);
+        handleClearSetting();
+      });
     }
   });
 
@@ -38,43 +38,65 @@ const Setting = ({ canvas }: any) => {
   };
 
   const handleClearSetting = () => {
-    setWidth("")
-    setHeight("")
-    setColor("")
-    setDiameter("")
+    setWidth("");
+    setHeight("");
+    setColor("");
+    setDiameter("");
   };
   const handleWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/,/g, "")
-    const intValue = parseInt(value, 10)
+    const value = e.target.value.replace(/,/g, "");
+    const intValue = parseInt(value, 10);
 
-    setWidth(value)
-    if(selectObject && selectObject.type === "rect" && intValue >= 0) {
-        selectObject.set({width: intValue / selectObject.scaleX})
-        canvas.renderAll();
+    setWidth(value);
+    if (selectObject && selectObject.type === "rect" && intValue >= 0) {
+      selectObject.set({ width: intValue / selectObject.scaleX });
+      canvas.renderAll();
     }
-
-  }
+  };
   const handleHeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/,/g, "")
-    const intValue = parseInt(value, 10)
+    const value = e.target.value.replace(/,/g, "");
+    const intValue = parseInt(value, 10);
 
-    setHeight(value)
-    if(selectObject && selectObject.type === "rect" && intValue >= 0) {
-        selectObject.set({height: intValue / selectObject.scaleY})
-        canvas.renderAll();
+    setHeight(value);
+    if (selectObject && selectObject.type === "rect" && intValue >= 0) {
+      selectObject.set({ height: intValue / selectObject.scaleY });
+      canvas.renderAll();
     }
+  };
+  const handleDiameterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/,/g, "");
+    const intValue = parseInt(value, 10);
 
-  }
+    setDiameter(value);
+    if (selectObject && selectObject.type === "circle" && intValue >= 0) {
+      selectObject.set({ radius: intValue / 2 / selectObject.scaleX });
+      canvas.renderAll();
+    }
+  };
   return (
     <div className="h-[40rem] ">
-    
-        {selectObject  && selectObject.type === "rect" && (
-            <>
-            <input placeholder="type width" onChange={handleWidthChange} value={width} />
-            <input placeholder="type height"onChange={handleHeightChange}value = {height} />
-            </>
-        )}
+      {selectObject && selectObject.type === "rect" && (
+        <>
+          <input
+            placeholder="type width"
+            onChange={handleWidthChange}
+            value={width}
+          />
+          <input
+            placeholder="type height"
+            onChange={handleHeightChange}
+            value={height}
+          />
+        </>
+      )}
+      {selectObject && selectObject.type === "circle" && (
+        <input
+          placeholder="type diameter"
+          onChange={handleDiameterChange}
+          value={diameter}
+        />
+      )}
     </div>
-  )
+  );
 };
 export default Setting;
