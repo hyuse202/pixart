@@ -41,7 +41,7 @@ const PixartApp = () => {
         radius: 60,
         fill: "#2F4DC6",
       });
-      canvas.add(circle)
+      canvas.add(circle);
     }
   };
   const AddStar = () => {
@@ -62,36 +62,40 @@ const PixartApp = () => {
       const star = new Polygon(starPoints, {
         top: 100,
         left: 200,
-        fill: '#FFD700', // Golden color
+        fill: "#FFD700", // Golden color
       });
 
       canvas.add(star);
     }
   };
   return (
-    <div className="min-h-screen flex items-center flex-col justify-center">
-      <Button
-        type="button"
-        className="text-white bg-gray-300"
-        onClick={AddRect}
-      >
-        rect
-      </Button>
-      <Button
-        type="button"
-        className="text-white bg-gray-300"
-        onClick={AddCircle}
-      >
-        circle
-      </Button>
-      <Button
-        type="button"
-        className="text-white bg-gray-300"
-        onClick={AddStar}
-      >
-        star
-      </Button>
-      <canvas className="border-2 border-black" ref={canvaRef} />
+    <div className="min-h-screen flex flex-col items-center">
+      <div className="flex flex-row mb-10 space-x-3 mt-10">
+        <Button
+          type="button"
+          className="text-white bg-gray-300"
+          onClick={AddRect}
+        >
+          rect
+        </Button>
+        <Button
+          type="button"
+          className="text-white bg-gray-300"
+          onClick={AddCircle}
+        >
+          circle
+        </Button>
+        <Button
+          type="button"
+          className="text-white bg-gray-300"
+          onClick={AddStar}
+        >
+          star
+        </Button>
+      </div>
+      <div className="justify-center">
+        <canvas className="border-2 border-black" ref={canvaRef} />
+      </div>
     </div>
   );
 };
