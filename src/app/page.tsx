@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Canvas, Rect, Circle, Polygon } from "fabric";
 import Button from "@/components/Button";
+import Setting from "@/components/Setting";
 const PixartApp = () => {
   const canvaRef = useRef<HTMLCanvasElement | null>(null);
   const [canvas, setCanvas] = useState<Canvas | null>(null);
@@ -96,6 +97,7 @@ const PixartApp = () => {
       <div className="justify-center">
         <canvas className="border-2 border-black" ref={canvaRef} />
       </div>
+      <Setting canvas={canvas} />
     </div>
   );
 };
