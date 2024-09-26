@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { Canvas, Rect, Circle, Polygon } from "fabric";
+import { Canvas, Rect, Circle, Polygon, FabricImage, IText } from "fabric";
 import Button from "@/components/Button";
 import Setting from "@/components/Setting";
 const PixartApp = () => {
@@ -9,8 +9,8 @@ const PixartApp = () => {
   useEffect(() => {
     if (canvaRef.current) {
       const initCanvas: any = new Canvas(canvaRef.current, {
-        width: 500,
-        height: 500,
+        width: 1000,
+        height: 800,
       });
       initCanvas.backgroundColor = "#fff";
       initCanvas.renderAll();
@@ -69,6 +69,38 @@ const PixartApp = () => {
       canvas.add(star);
     }
   };
+  const AddText = () => {
+    if(canvas){
+      const createText= new IText("a",{
+        left:100,
+        top:20
+      });
+      canvas.add(createText)
+    }
+  }
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0] && canvas) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+
+      // Read the image file as Data URL
+      reader.onload = async function (f) {
+        const data = f.target?.result as string;
+        try {
+          // Use fabric.Image.fromURL to load the image
+          const img = await FabricImage.fromURL(data);
+          img.scaleToWidth(200); // Scale image to fit within canvas
+          img.scaleToHeight(200);
+          canvas.add(img);
+          canvas.renderAll();
+        } catch (error) {
+          console.error("Error loading image:", error);
+        }
+      };
+
+      reader.readAsDataURL(file); // Convert image to data URL
+    }
+  };
   return (
     <div className="min-h-screen flex flex-col items-center">
       <div className="flex flex-row mb-10 space-x-3 mt-10">
@@ -93,10 +125,18 @@ const PixartApp = () => {
         >
           star
         </Button>
+        <Button
+          type="button"
+          className="text-white bg-gray-300"
+          onClick={AddText}
+        >
+          text 
+        </Button>
       </div>
       <div className="justify-center">
         <canvas className="border-2 border-black" ref={canvaRef} />
       </div>
+      <input type="file" onChange={handleImageUpload} accept="image/*" />
       <Setting canvas={canvas} />
     </div>
   );
