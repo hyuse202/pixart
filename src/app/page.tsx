@@ -5,23 +5,79 @@ import Button from "@/components/Button";
 import Setting from "@/components/Setting";
 const PixartApp = () => {
   const canvaRef = useRef<HTMLCanvasElement | null>(null);
-  const [canvas, setCanvas] = useState<Canvas | null>(null);
+  const [canvas, setCanvas] = useState<Canvas | any>("");
+  const [undoStack, setUndoStack] = useState<any>([]);
+  const [redoStack, setRedoStack] = useState<any>([]);
+  const [history, setHistory] = useState<string | any>([]);
   useEffect(() => {
     if (canvaRef.current) {
       const initCanvas: any = new Canvas(canvaRef.current, {
-        width: 1000,
+        width: 1700,
         height: 800,
       });
       initCanvas.backgroundColor = "#fff";
-      initCanvas.renderAll();
-
+      // initCanvas.renderAll();
+      // const jsonData = '{"objects":[{"type":"rect","originX":"center","originY":"center","left":300,"top":150,"width":150,"height":150,"fill":"#29477F","overlayFill":null,"stroke":null,"strokeWidth":1,"strokeDashArray":null,"strokeLineCap":"butt","strokeLineJoin":"miter","strokeMiterLimit":10,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"shadow":{"color":"rgba(94, 128, 191, 0.5)","blur":5,"offsetX":10,"offsetY":10},"visible":true,"clipTo":null,"rx":0,"ry":0,"x":0,"y":0},{"type":"circle","originX":"center","originY":"center","left":300,"top":400,"width":200,"height":200,"fill":"rgb(166,111,213)","overlayFill":null,"stroke":null,"strokeWidth":1,"strokeDashArray":null,"strokeLineCap":"butt","strokeLineJoin":"miter","strokeMiterLimit":10,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"shadow":{"color":"#5b238A","blur":20,"offsetX":-20,"offsetY":-10},"visible":true,"clipTo":null,"radius":100}],"background":""}'
+      // canvas.loadFromJSON(jsonData).then(function(){canvas.renderAll()})
       setCanvas(initCanvas);
+
+      // Save the initial state to history
+      saveToHistory(initCanvas);
+
+      // Save history whenever an object is added, modified, or removed
+      const saveHistory = () => saveToHistory(initCanvas);
+      initCanvas.on("object:added", saveHistory);
+      initCanvas.on("object:modified", saveHistory);
+      initCanvas.on("object:removed", saveHistory);
 
       return () => {
         initCanvas.dispose();
       };
     }
   }, []);
+
+  const saveToHistory = (canvasInstance: Canvas) => {
+    const json = JSON.stringify(canvasInstance.toJSON());
+    setHistory((prevHistory: any) => [...prevHistory, json]);
+  };
+
+  const handleUndo = () => {
+    if (history.length > 1) {
+      const currentState = history[history.length - 1];
+      const newHistory = history.slice(0, -1 + history.length);
+      setHistory(history);
+      setRedoStack([currentState, ...redoStack]);
+
+      const previousState = newHistory[newHistory.length - 1];
+      console.log({ history, newHistory, previousState });
+      loadCanvasState(previousState["object"]);
+    }
+  };
+
+  // Redo functionality
+  const handleRedo = () => {
+    if (redoStack.length > 0) {
+      const redoState = redoStack[0];
+      const newRedoStack = redoStack.slice(1);
+      setRedoStack(newRedoStack);
+
+      setHistory([...history, redoState]);
+      loadCanvasState(redoState["object"]);
+    }
+  };
+
+  // Load the canvas state from JSON
+  const loadCanvasState = (state: string) => {
+    if (canvas && state) {
+      // canvas.loadFromJSON(state, () => {
+      //   console.log(state)
+      //   canvas.renderAll();
+      // });
+      // const jsonData = '{"objects":[{"type":"rect","originX":"center","originY":"center","left":300,"top":150,"width":150,"height":150,"fill":"#29477F","overlayFill":null,"stroke":null,"strokeWidth":1,"strokeDashArray":null,"strokeLineCap":"butt","strokeLineJoin":"miter","strokeMiterLimit":10,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"shadow":{"color":"rgba(94, 128, 191, 0.5)","blur":5,"offsetX":10,"offsetY":10},"visible":true,"clipTo":null,"rx":0,"ry":0,"x":0,"y":0},{"type":"circle","originX":"center","originY":"center","left":300,"top":400,"width":200,"height":200,"fill":"rgb(166,111,213)","overlayFill":null,"stroke":null,"strokeWidth":1,"strokeDashArray":null,"strokeLineCap":"butt","strokeLineJoin":"miter","strokeMiterLimit":10,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"shadow":{"color":"#5b238A","blur":20,"offsetX":-20,"offsetY":-10},"visible":true,"clipTo":null,"radius":100}],"background":""}'
+      // canvas.loadFromJSON(jsonData).then(function(){canvas.renderAll()})
+    }
+  };
+
   const AddRect = () => {
     if (canvas) {
       const rect = new Rect({
@@ -70,14 +126,14 @@ const PixartApp = () => {
     }
   };
   const AddText = () => {
-    if(canvas){
-      const createText= new IText("a",{
-        left:100,
-        top:20
+    if (canvas) {
+      const createText = new IText("Tap to type", {
+        left: 100,
+        top: 20,
       });
-      canvas.add(createText)
+      canvas.add(createText);
     }
-  }
+  };
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0] && canvas) {
       const file = e.target.files[0];
@@ -99,6 +155,19 @@ const PixartApp = () => {
       };
 
       reader.readAsDataURL(file); // Convert image to data URL
+    }
+  };
+  const fileInputRef: any = React.useRef(null);
+  const exportToPNG = () => {
+    if (canvaRef.current) {
+      const dataURL = canvaRef.current.toDataURL("image/jpeg", {
+        format: "png",
+        quality: 1.0,
+      });
+      const link = document.createElement("a");
+      link.href = dataURL;
+      link.download = "canvas-image.png";
+      link.click();
     }
   };
   return (
@@ -130,14 +199,50 @@ const PixartApp = () => {
           className="text-white bg-gray-300"
           onClick={AddText}
         >
-          text 
+          text
+        </Button>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageUpload}
+          style={{ display: "none" }}
+          ref={fileInputRef}
+        />
+        <Button
+          type="button"
+          className="text-white bg-gray-300"
+          onClick={() => fileInputRef.current.click()}
+        >
+          Upload Image
+        </Button>
+        <Button
+          type="button"
+          className="text-white bg-gray-300"
+          onClick={handleRedo}
+        >
+          redo
+        </Button>
+        <Button
+          type="button"
+          className="text-white bg-gray-300"
+          onClick={handleUndo}
+        >
+          undo
+        </Button>
+        <Button
+          type="button"
+          className="text-white bg-gray-300"
+          onClick={exportToPNG}
+        >
+          export to png
         </Button>
       </div>
-      <div className="justify-center">
+      <div className="justify-center flex flex-row space-x-8">
         <canvas className="border-2 border-black" ref={canvaRef} />
+        <Setting canvas={canvas} />
       </div>
-      <input type="file" onChange={handleImageUpload} accept="image/*" />
-      <Setting canvas={canvas} />
+
+      {/* <input type="file" onChange={handleImageUpload} accept="image/*" /> */}
     </div>
   );
 };
