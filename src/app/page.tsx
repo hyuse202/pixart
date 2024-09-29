@@ -4,6 +4,7 @@ import { Canvas, Rect, Circle, Polygon, FabricImage, IText } from "fabric";
 import Button from "@/components/Button";
 import Setting from "@/components/Setting";
 import { handleObjectMoving, clearGuidelines } from "./snapHelper";
+import LayerList from "@/components/LayerList";
 const PixartApp = () => {
   const canvaRef = useRef<HTMLCanvasElement | null>(null);
   const [canvas, setCanvas] = useState<Canvas | any>("");
@@ -93,8 +94,8 @@ const PixartApp = () => {
       const rect = new Rect({
         top: 100,
         left: 50,
-        width: 100,
-        height: 50,
+        width: 500,
+        height: 300,
         fill: "#D84D42",
       });
       canvas.add(rect);
@@ -185,28 +186,28 @@ const PixartApp = () => {
       <div className="flex flex-row mb-10 space-x-3 mt-10">
         <Button
           type="button"
-          className="text-white bg-gray-300"
+          className="text-white font-semibold uppercase bg-red-500"
           onClick={AddRect}
         >
           rect
         </Button>
         <Button
           type="button"
-          className="text-white bg-gray-300"
+          className="text-white font-semibold uppercase bg-red-500"
           onClick={AddCircle}
         >
           circle
         </Button>
         <Button
           type="button"
-          className="text-white bg-gray-300"
+          className="text-white font-semibold uppercase bg-red-500"
           onClick={AddStar}
         >
           star
         </Button>
         <Button
           type="button"
-          className="text-white bg-gray-300"
+          className="text-white font-semibold uppercase bg-red-500"
           onClick={AddText}
         >
           text
@@ -220,28 +221,28 @@ const PixartApp = () => {
         />
         <Button
           type="button"
-          className="text-white bg-gray-300"
+          className="text-white font-semibold uppercase bg-red-500"
           onClick={() => fileInputRef.current.click()}
         >
           Upload Image
         </Button>
         <Button
           type="button"
-          className="text-white bg-gray-300"
+          className="text-white font-semibold uppercase bg-red-500"
           onClick={handleRedo}
         >
           redo
         </Button>
         <Button
           type="button"
-          className="text-white bg-gray-300"
+          className="text-white font-semibold uppercase bg-red-500"
           onClick={handleUndo}
         >
           undo
         </Button>
         <Button
           type="button"
-          className="text-white bg-gray-300"
+          className="text-white font-semibold uppercase bg-red-500"
           onClick={exportToPNG}
         >
           export to png
@@ -249,7 +250,11 @@ const PixartApp = () => {
       </div>
       <div className="justify-center flex flex-row space-x-8">
         <canvas className="border-2 border-black" ref={canvaRef} />
+        <div className="flex flex-col">
+
+        <LayerList canvas={canvas} />
         <Setting canvas={canvas} />
+        </div>
       </div>
 
       {/* <input type="file" onChange={handleImageUpload} accept="image/*" /> */}

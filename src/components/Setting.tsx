@@ -112,10 +112,11 @@ const Setting = ({ canvas }: any) => {
       canvas.renderAll();
     }
   };
+
   return (
-    <div className="h-[40rem] ">
+    <div className="w-[15rem]">
       {selectObject && selectObject.type === "rect" && (
-        <div className="flex flex-col h-[40rem] items-center justify-center">
+        <div className="flex flex-col h-[20rem] items-center justify-center">
           <div className="border-2 h-[20rem] border-black flex flex-col rounded item-center justify-center shadow-xl space-y-4">
             <p className="text-xl font-semibolds text-center">Width</p>
 
@@ -142,7 +143,7 @@ const Setting = ({ canvas }: any) => {
         </div>
       )}
       {selectObject && selectObject.type === "circle" && (
-        <div className="flex flex-col h-[40rem] items-center justify-center">
+        <div className="flex flex-col h-[20rem] items-center justify-center">
           <div className="border-2 h-[20rem] border-black flex flex-col rounded item-center justify-center shadow-xl space-y-4">
             <p className="text-xl font-semibolds text-center">Diameter</p>
             <input
