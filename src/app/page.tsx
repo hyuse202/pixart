@@ -3,12 +3,14 @@ import React, { useEffect, useRef, useState } from "react";
 import { Canvas, Rect, Circle, Polygon, FabricImage, IText } from "fabric";
 import Button from "@/components/Button";
 import Setting from "@/components/Setting";
+import { handleObjectMoving, clearGuidelines } from "./snapHelper";
 const PixartApp = () => {
   const canvaRef = useRef<HTMLCanvasElement | null>(null);
   const [canvas, setCanvas] = useState<Canvas | any>("");
   const [undoStack, setUndoStack] = useState<any>([]);
   const [redoStack, setRedoStack] = useState<any>([]);
   const [history, setHistory] = useState<string | any>([]);
+  const [guidelines, setGuidelines] = useState<any> ([])
   useEffect(() => {
     if (canvaRef.current) {
       const initCanvas: any = new Canvas(canvaRef.current, {
@@ -30,6 +32,14 @@ const PixartApp = () => {
       initCanvas.on("object:modified", saveHistory);
       initCanvas.on("object:removed", saveHistory);
 
+
+      initCanvas.on("object:moving", (event:any) => 
+        handleObjectMoving(initCanvas, event.target, guidelines, setGuidelines)
+
+      )
+      initCanvas.on("object:modified", () =>
+        clearGuidelines(initCanvas)
+      )
       return () => {
         initCanvas.dispose();
       };
